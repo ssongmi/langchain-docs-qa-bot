@@ -10,6 +10,9 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import * as dotenv from "dotenv";
+
+dotenv.config({ path: path.join(process.cwd(), ".env.local") });
 
 const GITHUB_API_BASE = "https://api.github.com";
 const REPO_OWNER = "langchain-ai";

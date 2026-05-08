@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "outDir": "./dist/scripts"
   },
-  "include": ["scripts/**/*.ts"],
+  "include": ["scripts/**/*.ts", "src/lib/**/*.ts"],
   "ts-node": {
     "esm": false,
     "transpileOnly": true

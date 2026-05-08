@@ -7,9 +7,14 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import * as dotenv from "dotenv";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { createClient } from "@supabase/supabase-js";
+import WebSocket from "ws";
+
+dotenv.config({ path: path.join(process.cwd(), ".env.local") });
+
+import { embedDocuments } from "../src/lib/embeddings";
 
 const INPUT_FILE = path.join(process.cwd(), "data", "raw-docs.json");
 
@@ -67,13 +72,13 @@ async function chunkDocuments(
 async function embedAndStore(chunks: DocumentChunk[]): Promise<void> {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      realtime: {
+        transport: WebSocket as unknown as typeof globalThis.WebSocket,
+      },
+    }
   );
-
-  const embeddings = new GoogleGenerativeAIEmbeddings({
-    apiKey: process.env.GOOGLE_API_KEY!,
-    modelName: "text-embedding-004",
-  });
 
   const BATCH_SIZE = 50;
   let stored = 0;
@@ -82,7 +87,7 @@ async function embedAndStore(chunks: DocumentChunk[]): Promise<void> {
     const batch = chunks.slice(i, i + BATCH_SIZE);
     const texts = batch.map((c) => c.content);
 
-    const vectors = await embeddings.embedDocuments(texts);
+    const vectors = await embedDocuments(texts);
 
     const rows = batch.map((chunk, idx) => ({
       content: chunk.content,

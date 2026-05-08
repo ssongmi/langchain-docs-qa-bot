@@ -5,7 +5,7 @@ create extension if not exists vector;
 create table documents (
   id bigserial primary key,
   content text not null,
-  embedding vector(768),  -- text-embedding-004 는 768차원
+  embedding vector(768),  -- gemini-embedding-001 with outputDimensionality=768
   metadata jsonb,         -- { source, title, url, section }
   created_at timestamptz default now()
 );

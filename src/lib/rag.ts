@@ -1,14 +1,9 @@
-import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
 import { RawSource } from '@/types/chat';
 import { createSupabaseAdminClient } from './supabase';
+import { embedQuery } from './embeddings';
 
 export async function retrieveDocuments(query: string, k = 5): Promise<RawSource[]> {
-  const embeddings = new GoogleGenerativeAIEmbeddings({
-    apiKey: process.env.GOOGLE_API_KEY!,
-    modelName: 'text-embedding-004',
-  });
-
-  const queryVector = await embeddings.embedQuery(query);
+  const queryVector = await embedQuery(query);
 
   const supabase = createSupabaseAdminClient();
   const { data, error } = await supabase.rpc('match_documents', {
