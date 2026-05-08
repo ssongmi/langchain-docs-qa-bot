@@ -13,8 +13,13 @@ import * as path from "path";
 
 const GITHUB_API_BASE = "https://api.github.com";
 const REPO_OWNER = "langchain-ai";
-const REPO_NAME = "langchainjs";
-const DOCS_PATHS = ["docs/core_docs/docs"];
+const REPO_NAME = "docs";
+const DOCS_PATHS = [
+  "src/oss/concepts",
+  "src/oss/langchain",
+  "src/oss/langgraph",
+  "src/oss/javascript",
+];
 const OUTPUT_FILE = path.join(process.cwd(), "data", "raw-docs.json");
 
 interface GitHubFile {
@@ -71,10 +76,8 @@ function extractTitle(content: string, filePath: string): string {
 }
 
 function filePathToUrl(filePath: string): string {
-  const relative = filePath
-    .replace("docs/core_docs/docs/", "")
-    .replace(/\.mdx?$/, "");
-  return `https://js.langchain.com/docs/${relative}`;
+  const relative = filePath.replace(/^src\//, "").replace(/\.mdx?$/, "");
+  return `https://docs.langchain.com/${relative}`;
 }
 
 async function crawlDirectory(
